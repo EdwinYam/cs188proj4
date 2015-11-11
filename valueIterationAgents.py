@@ -18,6 +18,7 @@ from learningAgents import ValueEstimationAgent
 import collections
 import time
 
+
 class AsynchronousValueIterationAgent(ValueEstimationAgent):
     """
         * Please read learningAgents.py before reading this.*
@@ -27,7 +28,8 @@ class AsynchronousValueIterationAgent(ValueEstimationAgent):
         for a given number of iterations using the supplied
         discount factor.
     """
-    def __init__(self, mdp, discount = 0.9, iterations = 1000):
+
+    def __init__(self, mdp, discount=0.9, iterations=1000):
         """
           Your cyclic value iteration agent should take an mdp on
           construction, run the indicated number of iterations,
@@ -55,14 +57,12 @@ class AsynchronousValueIterationAgent(ValueEstimationAgent):
         statesSize = len(states)
 
         for i in range(self.iterations):
-          state = states[i%statesSize]
+            state = states[i % statesSize]
 
-          if not self.mdp.isTerminal(state):
-            A = self.computeActionFromValues(state)
-            Q = self.computeQValueFromValues(state, A)
-            self.values[state] = Q
-
-
+            if not self.mdp.isTerminal(state):
+                A = self.computeActionFromValues(state)
+                Q = self.computeQValueFromValues(state, A)
+                self.values[state] = Q
 
     def getValue(self, state):
         """
@@ -81,7 +81,7 @@ class AsynchronousValueIterationAgent(ValueEstimationAgent):
         Q = 0.0
 
         for nextState in transition:
-          Q += nextState[1] * (self.mdp.getReward(state) + self.discount * self.getValue(nextState[0]))
+            Q += nextState[1] * (self.mdp.getReward(state) + self.discount * self.getValue(nextState[0]))
 
         return Q
 
@@ -100,14 +100,13 @@ class AsynchronousValueIterationAgent(ValueEstimationAgent):
         A = 0
         actions = self.mdp.getPossibleActions(state)
         if len(actions) == 0:
-          return None
+            return None
 
         for action in actions:
-          if self.computeQValueFromValues(state, action) > Q:
-            Q = self.computeQValueFromValues(state, action)
-            A = action
+            if self.computeQValueFromValues(state, action) > Q:
+                Q = self.computeQValueFromValues(state, action)
+                A = action
         return A
-
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
@@ -128,7 +127,8 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
         (see mdp.py) on initialization and runs prioritized sweeping value iteration
         for a given number of iterations using the supplied parameters.
     """
-    def __init__(self, mdp, discount = 0.9, iterations = 100, theta = 1e-5):
+
+    def __init__(self, mdp, discount=0.9, iterations=100, theta=1e-5):
         """
           Your prioritized sweeping value iteration agent should take an mdp on
           construction, run the indicated number of iterations,
