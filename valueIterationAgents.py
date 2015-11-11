@@ -52,7 +52,6 @@ class AsynchronousValueIterationAgent(ValueEstimationAgent):
             self.values[state] = 0
 
         "*** YOUR CODE HERE ***"
-
         statesSize = len(states)
 
         for i in range(self.iterations):
@@ -62,7 +61,6 @@ class AsynchronousValueIterationAgent(ValueEstimationAgent):
             A = self.computeActionFromValues(state)
             Q = self.computeQValueFromValues(state, A)
             self.values[state] = Q
-
 
 
 
@@ -86,7 +84,6 @@ class AsynchronousValueIterationAgent(ValueEstimationAgent):
           Q += nextState[1] * (self.mdp.getReward(state) + self.discount * self.getValue(nextState[0]))
 
         return Q
-
 
     def computeActionFromValues(self, state):
         """
