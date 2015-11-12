@@ -56,6 +56,9 @@ class AsynchronousValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         statesSize = len(states)
 
+        #Q5.3
+        # start = time.time()
+
         for i in range(self.iterations):
             state = states[i % statesSize]
 
@@ -63,6 +66,20 @@ class AsynchronousValueIterationAgent(ValueEstimationAgent):
                 A = self.computeActionFromValues(state)
                 Q = self.computeQValueFromValues(state, A)
                 self.values[state] = Q
+
+            # Q5.1:drop below 200 at iteration 9900
+            # Q5.2:drop below 200 at iteration 12526
+            # print str(sum(abs(value - 100) for state, value in self.values.items() if not self.mdp.isTerminal(state))) + " at "+str(i)
+            # Q5.5:1.32339811325
+            # Q5.6:1.74379515648
+            # if sum(abs(value - 100) for state, value in self.values.items() if not self.mdp.isTerminal(state)) < 200:
+            #   print time.time() - start
+
+
+        #Q5.3: 8.3e-5
+        #Q5.4: 8.4e-5
+        # avgTime = (time.time() - start)/self.iterations
+        # print "avgTime: " + str(avgTime)
 
     def getValue(self, state):
         """
@@ -159,9 +176,20 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
             theQueue.update(s, -diff) #push s onto priority Queue with priority -diff, update its priority if needed
 
 
+        #Q5.3
+        # avgTime2 = 0.0
+        #Q5.5 Q5.6
+        # start = time.time()
+
         for i in range(self.iterations):
+
+          #Q5.3: 0.000312554836273 3.1e-4
+          #Q5.4: 0.00040200214283  4.0e-4
+          # start2 = time.time()
+
           #if queue is empty, terminate
           if theQueue.isEmpty():
+            # print "avgTime: " + str(avgTime2/i) #for Q5
             return
 
           state = theQueue.pop()  #pop a state out
@@ -174,6 +202,17 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
             if diff > theta:
               theQueue.update(p, -diff) #push p into the priority queue with priority -diff
 
+          # Q5.1:drop below 200 at iteration 97
+          # Q5.2:drop below 200 at iteration 6815
+          # print str(sum(abs(value - 100) for state, value in self.values.items() if not self.mdp.isTerminal(state))) + " at "+str(i)
+
+          #Q5
+          # avgTime2 += (time.time() - start2)
+
+          # Q5.5:0.0414099693298
+          # Q5.6:3.06522703171
+          # if sum(abs(value - 100) for state, value in self.values.items() if not self.mdp.isTerminal(state)) < 200:
+          #   print time.time() - start
 
     def highestQValue(self, state):
         """
