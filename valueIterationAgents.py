@@ -143,3 +143,112 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
             self.values[state] = 0
 
         "*** YOUR CODE HERE ***"
+
+        predecessorsOfAllStates = {}
+
+        # populate the dictionary with predecessors of each state
+        for s in states:
+          predecessorsOfAllStates[s] = self.getPredecessors(s)
+
+        theQueue = util.PriorityQueue() #initialize an empty priority Queue
+
+        for s in states:
+          if not self.mdp.isTerminal(s):
+            highestQ = self.highestQValue(s) #get the highest Q value resulted from all available actions from s
+            diff = abs(self.values[s] - highestQ) #get the absolute value diff
+            theQueue.update(s, -diff) #push s onto priority Queue with priority -diff, update its priority if needed
+
+
+        for i in range(self.iterations):
+          #if queue is empty, terminate
+          if theQueue.isEmpty():
+            return
+
+          state = theQueue.pop()  #pop a state out
+          self.values[state] = self.highestQValue(state) #update the value
+
+          for p in list(predecessorsOfAllStates[state]):
+            highestQ = self.highestQValue(p) #get the highest Q value resulted from all available actions from p
+            diff = abs(self.values[p] - highestQ) #get the absolute value diff
+
+            if diff > theta:
+              theQueue.update(p, -diff) #push p into the priority queue with priority -diff
+
+
+    #return the highest Q-value based on all possible actions of state
+    def highestQValue(self, state):
+        resultQ = float('-inf')
+        actions = self.mdp.getPossibleActions(state)
+        if len(actions) == 0:
+            return None
+
+        for action in actions:
+            transition = self.mdp.getTransitionStatesAndProbs(state, action)
+            Q = 0.0
+
+            for nextState in transition:
+              Q += nextState[1] * (self.mdp.getReward(state) + self.discount * self.getValue(nextState[0]))
+
+            if Q > resultQ:
+                resultQ = self.computeQValueFromValues(state, action)
+        return resultQ
+
+
+    #check if coordinates are legal
+    def isAllowed(self, y, x):
+
+        #how to access grid attributes?
+
+        if y < 0 or y >= self.mdp.grid.height: return False
+        if x < 0 or x >= self.mdp.grid.width: return False
+        return self.mdp.grid[x][y] != '#'
+
+
+    #return a set containing all predecessors of state
+    def getPredecessors(self, state):
+        predecessorSet = set()
+
+        #how to find parents if state is terminal state?
+
+
+        if not self.mdp.isTerminal(state):
+          x, y = state
+
+          northState = (self.isAllowed(y+1,x) and (x,y+1)) or state
+          westState = (self.isAllowed(y,x-1) and (x-1,y)) or state
+          southState = (self.isAllowed(y-1,x) and (x,y-1)) or state
+          eastState = (self.isAllowed(y,x+1) and (x+1,y)) or state
+
+          if not self.mdp.isTerminal(northState):
+            if 'south' in self.mdp.getPossibleActions(northState):
+              transition = self.mdp.getTransitionStatesAndProbs(northState, 'south')
+              for nextState in transition:
+                if (nextState[0] == state) and (nextState[1] > 0):
+                  predecessorSet.add(northState)
+
+          if not self.mdp.isTerminal(southState):
+            if 'north' in self.mdp.getPossibleActions(southState):
+              transition = self.mdp.getTransitionStatesAndProbs(southState, 'north')
+              for nextState in transition:
+                if (nextState[0] == state) and (nextState[1] > 0):
+                  predecessorSet.add(southState)
+
+          if not self.mdp.isTerminal(westState):
+            if 'east' in self.mdp.getPossibleActions(westState):
+              transition = self.mdp.getTransitionStatesAndProbs(westState, 'east')
+              for nextState in transition:
+                if (nextState[0] == state) and (nextState[1] > 0):
+                  predecessorSet.add(westState)
+
+          if not self.mdp.isTerminal(eastState):
+            if 'west' in self.mdp.getPossibleActions(eastState):
+              transition = self.mdp.getTransitionStatesAndProbs(eastState, 'west')
+              for nextState in transition:
+                if (nextState[0] == state) and (nextState[1] > 0):
+                  predecessorSet.add(eastState)
+       
+        return predecessorSet
+
+
+
+
