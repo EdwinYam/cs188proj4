@@ -196,9 +196,6 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
 
     #check if coordinates are legal
     def isAllowed(self, y, x):
-
-        #how to access grid attributes?
-
         if y < 0 or y >= self.mdp.grid.height: return False
         if x < 0 or x >= self.mdp.grid.width: return False
         return self.mdp.grid[x][y] != '#'
