@@ -175,8 +175,10 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
               theQueue.update(p, -diff) #push p into the priority queue with priority -diff
 
 
-    #return the highest Q-value based on all possible actions of state
     def highestQValue(self, state):
+        """
+          return the highest Q-value based on all possible actions of state
+        """
         resultQ = float('-inf')
         actions = self.mdp.getPossibleActions(state)
         if len(actions) == 0:
@@ -194,15 +196,20 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
         return resultQ
 
 
-    #check if coordinates are legal
     def isAllowed(self, y, x):
+        """
+          check if coordinates are legal
+        """
         if y < 0 or y >= self.mdp.grid.height: return False
         if x < 0 or x >= self.mdp.grid.width: return False
         return self.mdp.grid[x][y] != '#'
 
 
-    #return a set containing all predecessors of state
     def getPredecessors(self, state):
+        """
+          return a set containing all predecessors of state
+        """
+
         predecessorSet = set()
 
         #how to find parents if state is terminal state?
