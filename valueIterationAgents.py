@@ -252,6 +252,7 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
         predecessorSet = set()
 
         #how to find parents if state is terminal state?
+        #if state is its own predecessor, what action should it take to do it?
 
 
         if not self.mdp.isTerminal(state):
@@ -261,6 +262,7 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
           westState = (self.isAllowed(y,x-1) and (x-1,y)) or state
           southState = (self.isAllowed(y-1,x) and (x,y-1)) or state
           eastState = (self.isAllowed(y,x+1) and (x+1,y)) or state
+
 
           if not self.mdp.isTerminal(northState):
             if 'south' in self.mdp.getPossibleActions(northState):
