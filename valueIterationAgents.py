@@ -235,15 +235,6 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
         return resultQ
 
 
-    def isAllowed(self, y, x):
-        """
-          check if coordinates are legal
-        """
-        if y < 0 or y >= self.mdp.grid.height: return False
-        if x < 0 or x >= self.mdp.grid.width: return False
-        return self.mdp.grid[x][y] != '#'
-
-
     def getPredecessors(self, state):
         """
           return a set containing all predecessors of state
@@ -251,48 +242,100 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
 
         predecessorSet = set()
 
-        #how to find parents if state is terminal state?
-        #if state is its own predecessor, what action should it take to do it?
-
-
         if not self.mdp.isTerminal(state):
-          x, y = state
+          states = self.mdp.getStates()
+          
+          for s in states:
+            if not self.mdp.isTerminal(s):
+              if 'south' in self.mdp.getPossibleActions(s):
+                transition = self.mdp.getTransitionStatesAndProbs(s, 'south')
+                for nextState in transition:
+                  if (nextState[0] == state) and (nextState[1] > 0):
+                    predecessorSet.add(s)
 
-          northState = (self.isAllowed(y+1,x) and (x,y+1)) or state
-          westState = (self.isAllowed(y,x-1) and (x-1,y)) or state
-          southState = (self.isAllowed(y-1,x) and (x,y-1)) or state
-          eastState = (self.isAllowed(y,x+1) and (x+1,y)) or state
+            if not self.mdp.isTerminal(s):
+              if 'north' in self.mdp.getPossibleActions(s):
+                transition = self.mdp.getTransitionStatesAndProbs(s, 'north')
+                for nextState in transition:
+                  if (nextState[0] == state) and (nextState[1] > 0):
+                    predecessorSet.add(s)
 
+            if not self.mdp.isTerminal(s):
+              if 'east' in self.mdp.getPossibleActions(s):
+                transition = self.mdp.getTransitionStatesAndProbs(s, 'east')
+                for nextState in transition:
+                  if (nextState[0] == state) and (nextState[1] > 0):
+                    predecessorSet.add(s)
 
-          if not self.mdp.isTerminal(northState):
-            if 'south' in self.mdp.getPossibleActions(northState):
-              transition = self.mdp.getTransitionStatesAndProbs(northState, 'south')
-              for nextState in transition:
-                if (nextState[0] == state) and (nextState[1] > 0):
-                  predecessorSet.add(northState)
-
-          if not self.mdp.isTerminal(southState):
-            if 'north' in self.mdp.getPossibleActions(southState):
-              transition = self.mdp.getTransitionStatesAndProbs(southState, 'north')
-              for nextState in transition:
-                if (nextState[0] == state) and (nextState[1] > 0):
-                  predecessorSet.add(southState)
-
-          if not self.mdp.isTerminal(westState):
-            if 'east' in self.mdp.getPossibleActions(westState):
-              transition = self.mdp.getTransitionStatesAndProbs(westState, 'east')
-              for nextState in transition:
-                if (nextState[0] == state) and (nextState[1] > 0):
-                  predecessorSet.add(westState)
-
-          if not self.mdp.isTerminal(eastState):
-            if 'west' in self.mdp.getPossibleActions(eastState):
-              transition = self.mdp.getTransitionStatesAndProbs(eastState, 'west')
-              for nextState in transition:
-                if (nextState[0] == state) and (nextState[1] > 0):
-                  predecessorSet.add(eastState)
-       
+            if not self.mdp.isTerminal(s):
+              if 'west' in self.mdp.getPossibleActions(s):
+                transition = self.mdp.getTransitionStatesAndProbs(s, 'west')
+                for nextState in transition:
+                  if (nextState[0] == state) and (nextState[1] > 0):
+                    predecessorSet.add(s)
+         
         return predecessorSet
+
+
+
+    # def getPredecessors(self, state):
+    #     """
+    #       old implementation, keep for reference only
+    #       return a set containing all predecessors of state
+    #     """
+
+    #     def isAllowed(y, x):
+    #         """
+    #           check if coordinates are legal
+    #         """
+    #         if y < 0 or y >= self.mdp.grid.height: return False
+    #         if x < 0 or x >= self.mdp.grid.width: return False
+    #         return self.mdp.grid[x][y] != '#'
+
+    #     predecessorSet = set()
+
+    #     #how to find parents if state is terminal state?
+    #     #if state is its own predecessor, what action should it take to do it?
+
+
+    #     if not self.mdp.isTerminal(state):
+    #       x, y = state
+
+    #       northState = (isAllowed(y+1,x) and (x,y+1)) or state
+    #       westState = (isAllowed(y,x-1) and (x-1,y)) or state
+    #       southState = (isAllowed(y-1,x) and (x,y-1)) or state
+    #       eastState = (isAllowed(y,x+1) and (x+1,y)) or state
+
+
+    #       if not self.mdp.isTerminal(northState):
+    #         if 'south' in self.mdp.getPossibleActions(northState):
+    #           transition = self.mdp.getTransitionStatesAndProbs(northState, 'south')
+    #           for nextState in transition:
+    #             if (nextState[0] == state) and (nextState[1] > 0):
+    #               predecessorSet.add(northState)
+
+    #       if not self.mdp.isTerminal(southState):
+    #         if 'north' in self.mdp.getPossibleActions(southState):
+    #           transition = self.mdp.getTransitionStatesAndProbs(southState, 'north')
+    #           for nextState in transition:
+    #             if (nextState[0] == state) and (nextState[1] > 0):
+    #               predecessorSet.add(southState)
+
+    #       if not self.mdp.isTerminal(westState):
+    #         if 'east' in self.mdp.getPossibleActions(westState):
+    #           transition = self.mdp.getTransitionStatesAndProbs(westState, 'east')
+    #           for nextState in transition:
+    #             if (nextState[0] == state) and (nextState[1] > 0):
+    #               predecessorSet.add(westState)
+
+    #       if not self.mdp.isTerminal(eastState):
+    #         if 'west' in self.mdp.getPossibleActions(eastState):
+    #           transition = self.mdp.getTransitionStatesAndProbs(eastState, 'west')
+    #           for nextState in transition:
+    #             if (nextState[0] == state) and (nextState[1] > 0):
+    #               predecessorSet.add(eastState)
+       
+    #     return predecessorSet
 
 
 
