@@ -65,7 +65,7 @@ class QLearningAgent(ReinforcementAgent):
           terminal state, you should return a value of 0.0.
         """
         "*** YOUR CODE HERE ***"
-        actions = self.mdp.getPossibleActions(state)
+        actions = self.getLegalActions(state)
 
         if len(actions) == 0:
           return 0.0
@@ -82,7 +82,26 @@ class QLearningAgent(ReinforcementAgent):
           you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = self.getLegalActions(state)
+
+        if len(actions) == 0:
+          return None
+
+        Q = float('-inf')
+        A = None
+
+        for action in actions:
+          QValue = self.getQValue(state, action)
+
+          if QValue == Q:
+            A = random.choice((A, action)) #break ties randomly for better behavior
+
+          if QValue > Q:
+            Q = QValue
+            A = action
+
+        return A
+
 
     def getAction(self, state):
         """
@@ -112,7 +131,15 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        actions = self.getLegalActions(state)
+        maxQValue = self.getValue(nextState)
+        QValue = self.getQValue(state, action)
+
+        key = (state,action)
+        val = (1 - self.alpha) * QValue + self.alpha * (reward + self.discount * maxQValue)
+
+        self.QValues[key] = val
+
 
     def getPolicy(self, state):
         return self.computeActionFromQValues(state)

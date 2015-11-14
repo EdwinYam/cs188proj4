@@ -113,11 +113,12 @@ class AsynchronousValueIterationAgent(ValueEstimationAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        Q = float('-inf')
-        A = 0
         actions = self.mdp.getPossibleActions(state)
         if len(actions) == 0:
             return None
+
+        Q = float('-inf')
+        A = None
 
         for action in actions:
             if self.computeQValueFromValues(state, action) > Q:
