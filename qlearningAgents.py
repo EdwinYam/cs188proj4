@@ -53,8 +53,7 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        #how to check if a state hasn't been seen
-
+        #dict is initialized to be all 0.0, if a state is unseen before, it will return 0.0
         return self.QValues[(state, action)]
 
     def computeValueFromQValues(self, state):
@@ -119,7 +118,17 @@ class QLearningAgent(ReinforcementAgent):
         action = None
         "*** YOUR CODE HERE ***"
 
+        if len(legalActions) == 0:
+          return None
+        else:
+          # choose random actions an epsilon fraction of the time
+          if util.flipCoin(self.epsilon):
+            action = random.choice(legalActions)
+          # choose current best Q-values
+          else:
+            action = self.getPolicy(state)
         return action
+
 
     def update(self, state, action, nextState, reward):
         """
@@ -137,7 +146,6 @@ class QLearningAgent(ReinforcementAgent):
 
         key = (state,action)
         val = (1 - self.alpha) * QValue + self.alpha * (reward + self.discount * maxQValue)
-
         self.QValues[key] = val
 
 
