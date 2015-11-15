@@ -80,6 +80,7 @@ class AsynchronousValueIterationAgent(ValueEstimationAgent):
         #Q5.4: 8.4e-5
         # avgTime = (time.time() - start)/self.iterations
         # print "avgTime: " + str(avgTime)
+        
 
     def getValue(self, state):
         """

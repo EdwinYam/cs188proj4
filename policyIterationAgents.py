@@ -65,7 +65,41 @@ class PolicyIterationAgent(ValueEstimationAgent):
         """ Run policy evaluation to get the state values under self.policy. Should update self.policyValues.
         Implement this by solving a linear system of equations using numpy. """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        states = self.mdp.getStates()
+
+        #construct identity matrix
+        identityMatrix = np.identity(len(states))
+
+        #construct T matrix
+        TMatrix = []
+        for state in states:
+            transitions = self.mdp.getTransitionStatesAndProbs(state, self.policy[state])
+            entry = []
+            for nextState in transitions:
+                entry.add(nextState[1])
+            TMatrix.add(entry)
+
+        #construct I - discount * T matrix
+        IdTMatrix = np.subtract(identityMatrix, np.dot(self.discount, TMatrix))
+
+        #construct Reward matrix
+        RMatrix = []
+        for state in states:
+            RMatrix.add([self.mdp.getReward(state)])
+
+        #solve for V matrix
+        VMatrix = np.linalg.solve(np.array(IdTMatrix), np.array(RMatrix))
+
+
+        #update self.policyValues
+        index = 0
+
+        for state in states:
+            self.policyValues[state] = VMatrix[index]
+            index += 1 
+
+
 
     def runPolicyImprovement(self):
         """ Run policy improvement using self.policyValues. Should update self.policy. """
