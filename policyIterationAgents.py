@@ -79,7 +79,7 @@ class PolicyIterationAgent(ValueEstimationAgent):
             for nextState in transitions:
                 entry.add(nextState[1])
             TMatrix.add(entry)
-
+            
         #construct I - discount * T matrix
         IdTMatrix = np.subtract(identityMatrix, np.dot(self.discount, TMatrix))
 
@@ -97,7 +97,7 @@ class PolicyIterationAgent(ValueEstimationAgent):
 
         for state in states:
             self.policyValues[state] = VMatrix[index]
-            index += 1 
+            index += 1
 
 
 
