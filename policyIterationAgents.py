@@ -36,7 +36,7 @@ class PolicyIterationAgent(ValueEstimationAgent):
               mdp.getStates()
               mdp.getPossibleActions(state)
               mdp.getTransitionStatesAndProbs(state, action)
-              mdp.getReward(state, action, nextState)
+              mdp.getReward(state)
               mdp.isTerminal(state)
         """
         self.mdp = mdp
@@ -104,7 +104,38 @@ class PolicyIterationAgent(ValueEstimationAgent):
     def runPolicyImprovement(self):
         """ Run policy improvement using self.policyValues. Should update self.policy. """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        for state in self.mdp.getState():
+            if self.mdp.isTerminal(state):
+                continue;
+            optimalpol = computePolicyFromValues(state)
+            if optimalpol != self.policy[state]:
+                self.policy[state] = optimalpol
+    
+    def computePolicyFromValues(self, state):
+        """
+          If a state s is terminal, then self.policy[s] should be None. 
+          Otherwise, the policy for that state should map to the action 
+          a having the highest Q-value Q(s, a).
+          The policy is the best action in the given state
+          according to the values currently stored in self.values.
+
+          You may break ties any way you see fit.  Note that if
+          there are no legal actions, which is the case at the
+          terminal state, you should return None.
+        """
+        "*** YOUR CODE HERE ***"
+        actions = self.mdp.getPossibleActions(state)
+        if len(actions) == 0:
+            return None
+
+        Q = float('-inf')
+        A = None
+
+        for action in actions:
+            if self.computeQValueFromValues(state, action) > Q:
+                Q = self.computeQValueFromValues(state, action)
+                A = action
+        return A
 
     def computeQValueFromValues(self, state, action):
         """
@@ -112,7 +143,11 @@ class PolicyIterationAgent(ValueEstimationAgent):
           value function stored in self.policyValues.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        transition = self.mdp.getTransitionStatesAndProbs(state, action)
+        Q = 0.0
+        for nextState in transition:
+            Q += nextState[1] * (self.mdp.getReward(state) + self.discount * self.getValue(nextState[0]))
+        return Q
 
     def getValue(self, state):
         return self.policyValues[state]
