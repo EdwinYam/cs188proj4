@@ -67,34 +67,44 @@ class PolicyIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
 
         states = self.mdp.getStates()
+        defaultEntry = [0.0] * len(states) #[0,0,0...0]
 
         #construct identity matrix
         identityMatrix = np.identity(len(states))
 
         #construct T matrix
-        TMatrix = []
+        TMatrix = [defaultEntry] * len(states)
+        index1 = 0
         for state in states:
-            transitions = self.mdp.getTransitionStatesAndProbs(state, self.policy[state])
-            entry = []
-            for nextState in transitions:
-                entry.add(nextState[1])
-            TMatrix.add(entry)
+            if not self.mdp.isTerminal(state):
+                transitions = self.mdp.getTransitionStatesAndProbs(state, self.policy[state])
+                index2 = 0
+                for nextState in transitions:
+                    TMatrix[index1][index2] = nextState[1]
+                    index2 += 1
+            index1 += 1
+
 
         #construct I - discount * T matrix
-        IdTMatrix = np.subtract(identityMatrix, np.dot(self.discount, TMatrix))
+        for x in range(len(states)):
+            for y in range(len(states)):
+                TMatrix[y][x] *= self.discount
+
+        IdTMatrix = np.subtract(np.array(identityMatrix), np.array(TMatrix))
+
 
         #construct Reward matrix
-        RMatrix = []
+        RMatrix = defaultEntry
+        index = 0
         for state in states:
-            RMatrix.add([self.mdp.getReward(state)])
+            RMatrix[index] = self.mdp.getReward(state)
+            index += 1
 
         #solve for V matrix
         VMatrix = np.linalg.solve(np.array(IdTMatrix), np.array(RMatrix))
 
-
         #update self.policyValues
         index = 0
-
         for state in states:
             self.policyValues[state] = VMatrix[index]
             index += 1 
@@ -104,10 +114,10 @@ class PolicyIterationAgent(ValueEstimationAgent):
     def runPolicyImprovement(self):
         """ Run policy improvement using self.policyValues. Should update self.policy. """
         "*** YOUR CODE HERE ***"
-        for state in self.mdp.getState():
+        for state in self.mdp.getStates():
             if self.mdp.isTerminal(state):
                 continue;
-            optimalpol = computePolicyFromValues(state)
+            optimalpol = self.computePolicyFromValues(state)
             if optimalpol != self.policy[state]:
                 self.policy[state] = optimalpol
     
