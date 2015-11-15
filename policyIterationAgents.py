@@ -17,6 +17,7 @@ import numpy as np
 
 from learningAgents import ValueEstimationAgent
 
+
 class PolicyIterationAgent(ValueEstimationAgent):
     """
         * Please read learningAgents.py before reading this.*
@@ -26,7 +27,8 @@ class PolicyIterationAgent(ValueEstimationAgent):
         for a given number of iterations using the supplied
         discount factor.
     """
-    def __init__(self, mdp, discount = 0.9, iterations = 20):
+
+    def __init__(self, mdp, discount=0.9, iterations=20):
         """
           Your policy iteration agent should take an mdp on
           construction, run the indicated number of iterations
@@ -69,42 +71,40 @@ class PolicyIterationAgent(ValueEstimationAgent):
         states = self.mdp.getStates()
         size = len(states)
 
-        #construct identity matrix
+        # construct identity matrix
         identityMatrix = np.identity(len(states))
 
-        #construct T matrix
+        # construct T matrix
         TMatrix = np.zeros((size, size))
         index1 = 0
         for state in states:
             if not self.mdp.isTerminal(state):
                 transitions = self.mdp.getTransitionStatesAndProbs(state, self.policy[state])
-                index2 = 0
                 for nextState in transitions:
+                    index2 = states.index(nextState[0])
                     TMatrix[index1][index2] = nextState[1]
-                    index2 += 1
             index1 += 1
 
-        #construct I - discount * T matrix
+        # construct I - discount * T matrix
         yTMatrix = np.dot(self.discount, TMatrix)
         IdTMatrix = np.subtract(identityMatrix, yTMatrix)
 
 
-        #construct Reward matrix
+        # construct Reward matrix
         RMatrix = np.zeros(size)
         index = 0
         for state in states:
             RMatrix[index] = self.mdp.getReward(state)
             index += 1
 
-        #solve for V matrix
+        # solve for V matrix
         VMatrix = np.linalg.solve(np.array(IdTMatrix), np.array(RMatrix))
 
-        #update self.policyValues
+        # update self.policyValues
         index = 0
         for state in states:
             self.policyValues[state] = VMatrix[index]
             index += 1
-
 
     def runPolicyImprovement(self):
         """ Run policy improvement using self.policyValues. Should update self.policy. """
@@ -115,7 +115,7 @@ class PolicyIterationAgent(ValueEstimationAgent):
             optimalpol = self.computePolicyFromValues(state)
             if optimalpol != self.policy[state]:
                 self.policy[state] = optimalpol
-    
+
     def computePolicyFromValues(self, state):
         """
           If a state s is terminal, then self.policy[s] should be None. 
