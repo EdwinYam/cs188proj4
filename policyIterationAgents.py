@@ -67,13 +67,13 @@ class PolicyIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
 
         states = self.mdp.getStates()
-        defaultEntry = [0.0] * len(states) #[0,0,0...0]
+        size = len(states)
 
         #construct identity matrix
         identityMatrix = np.identity(len(states))
 
         #construct T matrix
-        TMatrix = np.array([defaultEntry] * len(states))
+        TMatrix = np.zeros((size, size))
         index1 = 0
         for state in states:
             if not self.mdp.isTerminal(state):
@@ -91,7 +91,7 @@ class PolicyIterationAgent(ValueEstimationAgent):
 
 
         #construct Reward matrix
-        RMatrix = np.array(defaultEntry)
+        RMatrix = np.zeros(size)
         index = 0
         for state in states:
             RMatrix[index] = self.mdp.getReward(state)
